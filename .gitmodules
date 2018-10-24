@@ -1,0 +1,9 @@
+[submodule "gw-workflow"]
+	path = gw-workflow
+	url = https://github.com/SSantosLab/gw_workflow.git
+[submodule "Main-Injector"]
+	path = Main-Injector
+	url = https://github.com/SSantosLab/Main-Injector.git
+[submodule "Post-Processing"]
+	path = Post-Processing
+	url = https://github.com/SSantosLab/Post-Processing.git
