@@ -10,3 +10,5 @@ The only step that may need human intervention is in creating the config file fo
 * '--res', type=str, choices=[64, 128, 256], default=128 #skymap resolution
 * '--debug', type=str, choices=[True,False], default=False
 * '--propid', default='2017B-0110'
+
+Test
