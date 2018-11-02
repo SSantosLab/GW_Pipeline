@@ -6,28 +6,14 @@ import numpy as np
 import smtplib
 from email.mime.text import MIMEText
 
-############# 8/14/18 update #############
-### This scirpt is still a work in    ###
-### progress. To run as is, make sure ###
-### to run in a the directory that    ### 
-### Main-Injector, gw_workflow, ,and  ###
-### Post-Processing live.             ###
-#########################################
-
 cwd = os.getcwd()
 parser = argparse.ArgumentParser()
 parser.add_argument('--rootdir',
                     default = cwd,
                     help="Directory where the Main-Injector, gw_workflow, and PostProcessing directories live.")
-
 args=parser.parse_args()
 
 DIR_SOURCE = args.rootdir
-#DIR_MAIN = DIR_SOURCE.rsplit('/', 1)[0]
-
-#DIR_PLOTS = DIR_MAIN+'/plots/'
-#DIR_OUT = DIR_MAIN+'/out/'
-
 
 ############# Send emails to appropriate people when things fail #############
 
@@ -77,7 +63,7 @@ def source(script, update=1):
 
     return env
 
-"""
+
 ############# Make yaml file for recycler ############# 
 
 #information needed to make the .yaml config file for recycler
@@ -148,11 +134,11 @@ print('')
 print("Moving on to image processing ...")
 print('')
 
-"""
+
 ############# Image Processing ################ 
 
 ############ create new season number ###########
-### Y6 will start with 600 (417 for mock)   #####
+### Y6 will start with 600 (use 417 for mock runs) #####
 import easyaccess
 import fitsio
 
@@ -174,24 +160,19 @@ print('')
 #dagrc_name= make_dagrc.makeDagRC(seasonval=417) #for mock run
 #os.system('mv dagmaker.rc gw_workflow/dagmaker.rc') 
 
-############################################################
-"""
-# diffimg_setup + seasonCycler has structure to make the exposure list
-# Need to modify to get just what we want here -- curatedExposure.list
-
-source(DIR_SOURCE+'/Post-Processing/diffimg_setup.sh')
-os.system('. '+DIR_SOURCE+'/seasonCycler.sh') #find new exposures and create list
-"""
-
+#Make curatedExposure.list
+os.system("bash "DIR_SOURCE+"make_curatedlist.sh")
 
 source('gw_workflow/setup_img_proc.sh')
 print("Environment successfully set up for Image processing.")
 print('')
 
-explist = np.genfromtxt(DIR_SOURCE+'/gw_workflow/bns_nite1_first10exposures.list', delimiter=' ', usecols=0) #this will just be curatedExposure.list for production. new_curated.list
+explist = np.genfromtxt(DIR_SOURCE+'/gw_workflow/bns_nite1_first10exposures.list', delimiter=' ', usecols=0) #use curatedExposure.list for production. new_curated.list
 
-imgprocout = open('test_imgproc.out', 'w')
-imgprocerr = open('test_imgproc.err', 'w')
+dagmakerout = open('test_imgproc_dagmaker.out', 'w')
+dagmakererr = open('test_imgproc_dagmaker.err', 'w')
+jobsubout = open("test_imgproc_jobsub.out", 'w')
+jobsuberr = open('test_imgproc_jobsub.err', 'w')
 
 for i in explist:
     EXPNUM = int(i)
@@ -205,35 +186,37 @@ for i in explist:
                                 stdout = subprocess.PIPE, stderr=subprocess.PIPE, cwd='gw_workflow/') 
         
         im1out, im1err = img1.communicate()
-        imgprocout.write(im1out)
-        imgprocerr.write(im1err)
+        dagmakerout.write(im1out)
+        dagmakererr.write(im1err)
+
 
         rc1 = img1.returncode
         print('The return code for DAGMaker is '+str(rc1))
         
         if rc1 != 0:
             err_msg = "DAGMaker failed."
-            where = "Image Processing ("+DIR_SOURCE+"/"+imgprocout.name+")"
+            where = "Image Processing ("+DIR_SOURCE+"/"+dagmakererr.name+")"
             send_email(err_msg, where)
         else:
             print('Finished ./DAGMaker for exposure '+str(EXPNUM)+'. Submitting jobs.')
 
         print('')
+        
 
         img2 = subprocess.Popen(['jobsub_submit_dag','--role=DESGW', '-G', 'des','file://desgw_pipeline_'+str(EXPNUM)+'.dag'], 
                                 stdout = subprocess.PIPE, stderr=subprocess.PIPE, cwd='gw_workflow/')        
 
         im2out, im2err = img2.communicate()
-        imgprocerr.write("Errors for jobsub_submit_dag:\n")
-        imgprocout.write("Output for jobsub_submit_dag:\n")
-        imgprocout.write(im2out)
-        imgprocerr.write(im2err)
+        jobsuberr.write("Errors for jobsub_submit_dag:\n")
+        jobsubout.write("Output for jobsub_submit_dag:\n")
+        jobsubout.write(im2out)
+        jobsuberr.write(im2err)
 
         rc2 = img2.returncode
         print('The return code for this jobsub is '+str(rc2))
         if rc2 != 0:
             err_msg = "Image processing job sub failed."
-            where = "Image Processing ("+DIR_SOURCE+"/"+imgprocout.name+")"
+            where = "Image Processing ("+DIR_SOURCE+"/"+jobsuberr.name+")"
             send_email(err_msg, where)
 
         else:
@@ -242,8 +225,11 @@ for i in explist:
             print('Look at test_imgproc.out for the jobid')
     else:
         print('Already processed exposure number '+str(EXPNUM))
-imgprocout.close()
-imgprocerr.close()
+
+dagmakerout.close()
+dagmakererr.close()
+jobsuberr.close()
+jobsubout.close()
 
 print("Finished image processing! Moving on to post processing...")
 print('')
@@ -251,13 +237,10 @@ print('')
 
 
 ############# Run Post Processing #############
-############# we have a script that will make the postproc_seasonnumber.ini 
-############# just need to know where to look for the ligo id 
-
 postprocout = open(DIR_SOURCE+'/test_postproc.out', 'w')
 postprocerr = open(DIR_SOURCE+'/test_postproc.err', 'w')
-#print("Environment successfully set up for post processing.")
 
+#make postproc_*.ini file -- still working on this (10/20/18)
 #import yaml
 #with open('/data/des41.a/data/desgw/alyssa_test/Main-Injector/recycler.yaml') as f:
 #    var=yaml.load(f.read())
