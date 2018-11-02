@@ -1,5 +1,16 @@
 # GW_Pipeline
 The GW pipeline is the pipeline where we go from LIGO trigger to candidate list. The automation script TestAutomate.py will call Main-Injector, gw_workflow, and Post-Processing. To run on a des machine:
+
+To clone and update:
+```
+#to clone with submodules
+git clone --recursive <url>
+
+#Update submodules
+git submodule foreach git pull origin master
+```
+
+To run 
 ```
 conda activate des18a
 python TestAutomate.py 
