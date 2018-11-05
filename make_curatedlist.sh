@@ -24,11 +24,11 @@ then
 #    for INIFILE in ${ARRAY[@]}
     for ((i=0; i<${#ARRAY[@]}; i++))
     do
-	echo "current ini file "$INIFILE
-	PROPID="$(awk -F "=" '/^propid/{print $NF}' $INIFILE)"
+	echo "current ini file "${ARRAY[i]}
+	PROPID="$(awk -F "=" '/^propid/{print $NF}' ${ARRAY[i]})"
 	today=`date +%Y%m%d`
 	yesterday=`date -d "yesterday 13:00" +%Y%m%d`
-	python Post-Processing/getExpWPropIDandNite.py -n $today $yesterday -p 2014B-0404
+	python Post-Processing/getExpWPropIDandNite.py -n $today $yesterday -p $PROPID
     done
 
 else
