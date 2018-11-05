@@ -15,6 +15,7 @@ To run
 conda activate des18a
 python TestAutomate.py 
 ```
+You may want to check dagmaker.rc to make sure you have the correct email and flags you want (writedb, cutoffs, etc.)
 ***Note that you can only submit jobs for dagmaker/SEprocessing when running as the desgw user***
 
 The only step that may need human intervention is in creating the config file for recycler. The different options for TestAutomate.py are:
