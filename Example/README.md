@@ -24,7 +24,7 @@ But the code still runs fine, so don't worry about it if you do too.
 In the Example directory
 ```
 conda activate des18a
-python TestAutomate.py 
+python TestAutomate.py (note there is an optional arg --rootdir <example dir>, if you wish to run this from somewhere else)
 ```
 You may want to check dagmaker.rc to make sure you have the correct email and flags you want (writedb, cutoffs, etc.)
 
