@@ -1,0 +1,67 @@
+area_per_hex: 3.0
+camera: decam
+debug: False
+default_map_name: bayestar.fits
+distance: 60.0
+end_of_season: 58459.0
+enddate_BH: 18
+enddate_NS: 10
+epoch1_BH: 0
+epoch1_NS: 0
+epoch2_BH: 1
+epoch2_NS: 2
+epoch3_BH: 14
+epoch3_NS: 4
+events_observed:
+- GW150914
+- GW151226
+exposure_filter_BH:
+- i
+exposure_filter_NS:
+- i
+- z
+exposure_length_BH:
+- 90.0
+exposure_length_NS:
+- 60.0
+- 90.0
+exposure_tiling_BH:
+- 10
+exposure_tiling_NS:
+- 9
+- 9
+forceProbHasNS: True
+force_distance: False
+hours_lost_to_weather_for_BH: 0
+hours_lost_to_weather_for_NS: 0
+isfirsthalf: False
+ishalfnight: False
+issecondhalf: False
+maxHexesPerSlot_BH: 18
+maxHexesPerSlot_NS: 6
+mjd: 57974.3530295
+nepochs_BH: 3
+nepochs_NS: 4
+overhead: 30.0
+primaryemails:
+- djbrout@gmail.com
+probHasNS: 1.0
+probHasNS_threshold: 0.5
+propid: 2017B-0110
+rate_of_bh_in_O2: 20.0
+rate_of_ns_in_O2: 2.0
+real_or_sim: real
+recycler_mjd: 57979.5
+resolution: 128
+sendEmailsToEveryone: False
+sendtexts: False
+skipAll: False
+skipPlots: False
+skipjson: False
+skymap_filename: ./OUTPUT/REAL/G297595/bayestar/bayestar.fits.gz
+start_of_season: 58429.0
+time_budget_for_BH: 1.5
+time_budget_for_NS: 20.0
+trigger_id: G297595
+trigger_path: ./OUTPUT/REAL/
+wrap_all_triggers: False
