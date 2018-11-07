@@ -1,25 +1,14 @@
-# GW_Pipeline
+# EXAMPLE
 The GW pipeline is the pipeline where we go from LIGO trigger to candidate list. The automation script TestAutomate.py will call Main-Injector, gw_workflow, and Post-Processing. To run on a des machine:
 
-To clone and update:
-```
-#to clone with submodules
-git clone --recursive <url>
 
-#Update submodules
-git submodule foreach git pull origin master
-```
-
-**To run**:
-
+## To run:
 You will first need to run (in a clean terminal -- nothing setup)
-
 ***ONLY RUN IF YOU ARE NOT SIGNED IN AS DESGW***
 ```
 kx509; voms-proxy-init -rfc -noregen -voms des:/des/Role=Analysis -valid 24:00
 ``` 
 I sometimes get this error 
-
 "Error: des: User unknown to this VO.
 
 Trying next server for des.
@@ -29,11 +18,9 @@ Error: des: User unknown to this VO.
 
 None of the contacted servers for des were capable
 of returning a valid AC for the user."
-
 But the code still runs fine, so don't worry about it if you do too.
 
-To actually run:
-
+## To actually run:
 In the Example directory
 ```
 conda activate des18a
