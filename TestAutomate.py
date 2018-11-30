@@ -67,26 +67,28 @@ def source(script, update=1):
 ############# Make yaml file for recycler ############# 
 
 #information needed to make the .yaml config file for recycler
-parser.add_argument('--camera', 
+parser2 = argparse.ArgumentParser()
+parser2.add_argument('--camera', 
                     choices=['decam', 'hsc'], 
                     default='decam', 
                     help="what camera did we use, default=decam")
-parser.add_argument('--res', 
+parser2.add_argument('--res', 
                     type=str, 
                     choices=[64, 128, 256], 
                     default=128,
                     help="what resolution do you want the map, default=128")
-parser.add_argument('--debug', 
+parser2.add_argument('--debug', 
                     type=str, 
                     choices=[True,False], 
                     default=False, 
                     help="turn debugging on/off")
-parser.add_argument('--propid', 
+parser2.add_argument('--propid', 
                     default='2017B-0110', 
                     help='proposal id for this run')
+args2=parser2.parse_args()
 
 #makeYaml takes (camera, res, propid, sendEmail=(default False), sendTexts=(default False), debug=(default False)) 
-yamlName= make_recycler_config.makeYaml(camera=args.camera, res=args.res, propid=args.propid, debug=args.debug)
+yamlName= make_recycler_config.makeYaml(camera=args2.camera, res=args2.res, propid=args2.propid, debug=args2.debug)
 
 #this is a hack to make sure the true/false statements are capitalized.
 os.system("sed -i -e 's/false/False/g' "+yamlName)
