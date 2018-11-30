@@ -12,11 +12,11 @@ parser.add_argument('--rootdir',
 args=parser.parse_args()
 
 if args.rootdir is None:
-    DIR_EXAMPLE = os.getcwd()
-    DIR_SOURCE = DIR_EXAMPLE.rsplit('/',1)[0]
-else:
-    DIR_EXAMPLE = args.rootdir
-    DIR_SOURCE = DIR_EXAMPLE.rsplit('/',1)[0]
+    DIR_SOURCE = os.getcwd()
+#    DIR_SOURCE = DIR_EXAMPLE.rsplit('/',1)[0]
+#else:
+#    DIR_EXAMPLE = args.rootdir
+#    DIR_SOURCE = DIR_EXAMPLE.rsplit('/',1)[0]
 
 ############# Send emails to appropriate people when things fail #############
 
@@ -68,28 +68,30 @@ def source(script, update=1):
 
 
 ############# Make yaml file for recycler ############# 
-
 #information needed to make the .yaml config file for recycler
-parser.add_argument('--camera', 
+parser2 = argparse.ArgumentParser()
+parser2.add_argument('--camera', 
                     choices=['decam', 'hsc'], 
                     default='decam', 
                     help="what camera did we use, default=decam")
-parser.add_argument('--res', 
+parser2.add_argument('--res', 
                     type=str, 
                     choices=[64, 128, 256], 
                     default=128,
                     help="what resolution do you want the map, default=128")
-parser.add_argument('--debug', 
+parser2.add_argument('--debug', 
                     type=str, 
                     choices=[True,False], 
                     default=False, 
                     help="turn debugging on/off")
-parser.add_argument('--propid', 
+parser2.add_argument('--propid', 
                     default='2017B-0110', 
                     help='proposal id for this run')
+args2=parser2.parse_args()
+
 
 #makeYaml takes (camera, res, propid, sendEmail=(default False), sendTexts=(default False), debug=(default False)) 
-yamlName= make_recycler_config.makeYaml(camera=args.camera, res=args.res, propid=args.propid, debug=args.debug)
+yamlName= make_recycler_config.makeYaml(camera=args2.camera, res=args2.res, propid=args2.propid, debug=args2.debug)
 
 #this is a hack to make sure the true/false statements are capitalized.
 os.system("sed -i -e 's/false/False/g' "+yamlName)
@@ -112,7 +114,7 @@ print("Environment successfully set up for Main Injector")
 
 
 start_main = subprocess.Popen(['python', DIR_SOURCE+'/Main-Injector/recycler.py'], 
-                        stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=DIR_SOURCE+'Main-Injector/')
+                        stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=DIR_SOURCE+'/Main-Injector/')
 
 main_out, main_err = start_main.communicate()
 
@@ -166,7 +168,7 @@ print('')
 #Make curatedExposure.list
 #os.system("bash "+DIR_EXAMPLE+"/make_curatedlist.sh")
 
-source(DIR_EXAMPLE+'/setup_img_proc.sh')
+source(DIR_SOURCE+'/setup_img_proc.sh')
 print("Environment successfully set up for Image processing.")
 print('')
 
@@ -179,14 +181,14 @@ jobsuberr = open('test_imgproc_jobsub.err', 'w')
 
 for i in explist:
     EXPNUM = int(i)
-    check = os.path.isdir(DIR_EXAMPLE+'/gw_workflow/mytemp_'+str(EXPNUM))
+    check = os.path.isdir(DIR_SOURCE+'/gw_workflow/mytemp_'+str(EXPNUM))
 
     check = False #only for test runs
     if check == False:
         print("mytemp_"+str(EXPNUM)+" does not exist, running DAGMaker.sh")
 
         img1 = subprocess.Popen(['bash','-c', DIR_SOURCE+'/gw_workflow/DAGMaker.sh '+str(EXPNUM)] ,
-                                stdout = subprocess.PIPE, stderr=subprocess.PIPE, cwd='gw_workflow/') 
+                                stdout = subprocess.PIPE, stderr=subprocess.PIPE, cwd=DIR_SOURCE+'/gw_workflow/') 
         
         im1out, im1err = img1.communicate()
         dagmakerout.write(im1out)
@@ -221,13 +223,14 @@ for i in explist:
             err_msg = "Image processing job sub failed."
             where = "Image Processing ("+DIR_SOURCE+"/"+jobsuberr.name+")"
             send_email(err_msg, where)
-
+            print('')
         else:
             print('Finished jobsub_submit_dag for exposure '+str(EXPNUM))
-            print('')
             print('Look at test_imgproc.out for the jobid')
+            print('')
     else:
         print('Already processed exposure number '+str(EXPNUM))
+        print('')
 
 dagmakerout.close()
 dagmakererr.close()
@@ -251,7 +254,7 @@ postprocerr = open(DIR_SOURCE+'/test_postproc.err', 'w')
 #os.system('python Post-Processing/make_postproc_ini.py --season '+str(var['season']))
 
 start_pp = ['bash','-c', DIR_SOURCE+'/Post-Processing/seasonCycler.sh']
-postproc = subprocess.Popen(start_pp, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd='Post-Processing/')
+postproc = subprocess.Popen(start_pp, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=DIR_SOURCE+'/Post-Processing/')
 
 while postproc.poll() is None:
     l = postproc.stdout.readline()
